@@ -1,0 +1,8 @@
+# 프로젝트별 실제 작업물 (템플릿엔 안 올림)
+.memory/project/preflight-v*.md
+.memory/project/plan-v*.md
+.memory/project/tasks-v*.md
+
+# OS/IDE
+.DS_Store
+.vscode/
