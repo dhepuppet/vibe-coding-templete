@@ -115,3 +115,4 @@ git checkout main  # 최신으로 복귀
 - Diff규칙: @03-minimum-diff.md
 - 보안: @04-security-checklist.md
 - Memory Bank: @05-memory-bank-guide.md
+- Roadmap: @06-roadmap.md
