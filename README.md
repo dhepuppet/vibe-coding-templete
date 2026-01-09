@@ -46,7 +46,8 @@ vibe-coding-template/
 │   │   ├── 02-gate-system.md      # Gate 검증 가이드
 │   │   ├── 03-minimum-diff.md     # 최소 변경 규칙
 │   │   ├── 04-security-checklist.md  # 보안 체크리스트
-│   │   └── 05-memory-bank-guide.md   # Memory Bank 가이드
+│   │   ├── 05-memory-bank-guide.md   # Memory Bank 가이드
+│   │   └── 06-roadmap.md          # 로드맵 템플릿
 │   │
 │   └── 📁 project/            # 프로젝트 상태 (자주 업데이트)
 │       ├── 00-description.md      # 프로젝트 개요
