@@ -117,6 +117,8 @@ cd my-new-project
 ```
 
 프롬프트에 따라 입력:
+- Monorepo 여부: `y` 또는 `N`
+- 기술 스택: `1` (Node.js) / `2` (Python) / `3` (둘 다)
 - 프로젝트 이름: `my-project`
 - 목표: `어떤 프로젝트인지 한 줄 설명`
 
@@ -124,7 +126,9 @@ cd my-new-project
 - `.memory/project/00-description.md` — 프로젝트 개요
 - `.memory/project/50-progress.md` — 진행 기록
 - `.memory/project/60-decisions.md` — 결정 로그
-- `AGENTS.md` — AI 에이전트용 규칙 (🆕)
+- `AGENTS.md` — AI 에이전트용 규칙
+- `requirements.txt` — Python 선택 시
+- `package.json` — Node.js 선택 시
 
 ### 3단계: AI 도구에서 열기
 

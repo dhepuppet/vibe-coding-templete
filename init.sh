@@ -7,10 +7,27 @@ echo ""
 read -p "Monorepo 구조로 만들까? (y/N): " IS_MONOREPO
 IS_MONOREPO=${IS_MONOREPO:-N}
 
+# 스택 선택
+echo ""
+echo "기술 스택 선택:"
+echo "  1) Node.js (npm/pnpm)"
+echo "  2) Python (pip/poetry)"
+echo "  3) 둘 다"
+read -p "선택 (1/2/3, 기본 1): " STACK_CHOICE
+STACK_CHOICE=${STACK_CHOICE:-1}
+
 read -p "프로젝트 이름: " PROJECT_NAME
 read -p "뭐 만들 거야? (1줄): " PROJECT_GOAL
 
 TODAY=$(date +%Y-%m-%d)
+
+# 스택 문자열 설정
+case $STACK_CHOICE in
+    1) STACK_NAME="Node.js" ;;
+    2) STACK_NAME="Python" ;;
+    3) STACK_NAME="Node.js + Python" ;;
+    *) STACK_NAME="Node.js" ;;
+esac
 
 # 00-description.md 생성
 cat > .memory/project/00-description.md << EOF
@@ -23,7 +40,8 @@ $TODAY
 $PROJECT_GOAL
 
 ## 기술 스택
-- Preflight에서 결정
+- 기본: $STACK_NAME
+- 상세: Preflight에서 결정
 
 ## 핵심 기능
 - Preflight에서 정리
@@ -38,6 +56,7 @@ cat > .memory/project/50-progress.md << EOF
 
 ## $TODAY
 - [x] 프로젝트 초기화: $PROJECT_NAME
+- [x] 스택 선택: $STACK_NAME
 - [ ] Preflight 작성
 - [ ] v0.1 구현
 EOF
@@ -49,13 +68,14 @@ cat > .memory/project/60-decisions.md << EOF
 ## $TODAY - 프로젝트 시작
 - **결정**: $PROJECT_NAME 시작
 - **이유**: $PROJECT_GOAL
+- **스택**: $STACK_NAME
 EOF
 
 # MAIN_PROMPT.md 프로젝트명 업데이트
 sed -i '' "s/\[프로젝트명\]/$PROJECT_NAME/g" MAIN_PROMPT.md 2>/dev/null || \
 sed -i "s/\[프로젝트명\]/$PROJECT_NAME/g" MAIN_PROMPT.md
 
-# AGENTS.md 생성
+# AGENTS.md 생성 (스택에 따라 다른 Dev Environment)
 cat > AGENTS.md << 'AGENTSEOF'
 # AGENTS.md
 
@@ -145,6 +165,7 @@ After each task, output:
 
 ## 🛠️ Dev Environment
 
+### Node.js
 ```bash
 # Install dependencies
 npm install        # or pnpm install
@@ -162,7 +183,33 @@ npm run build
 npm run lint
 ```
 
-<!-- 한국어: 기본 개발 명령어들. 프로젝트 스택에 맞게 수정 필요. -->
+### Python
+```bash
+# 가상환경 생성 및 활성화
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 의존성 설치
+pip install -r requirements.txt
+# or poetry install
+
+# 실행
+python main.py
+# or uvicorn main:app --reload (FastAPI)
+# or streamlit run app.py (Streamlit)
+
+# 테스트
+pytest
+
+# 린트
+ruff check .
+# or flake8
+```
+
+### Python 상세 가이드
+See `.memory/templates/08-python-stack.md`
+
+<!-- 한국어: Node.js는 npm/pnpm, Python은 venv+pip 또는 poetry 사용. 상세 가이드는 08-python-stack.md 참고. -->
 
 ---
 
@@ -213,8 +260,8 @@ git push origin main --tags
 ```
 
 ### Before commit
-1. Run `npm run lint` (if available)
-2. Run `npm test` (if available)
+1. Run lint (npm run lint / ruff check .)
+2. Run tests (npm test / pytest)
 3. Update `.memory/project/50-progress.md`
 
 ### Rollback if needed
@@ -254,35 +301,35 @@ git checkout main  # Return to latest
 
 ## 🗂️ Project Structure
 
+### Node.js
 ```
 .
-├── AGENTS.md              ← You are here (agent instructions)
-├── MAIN_PROMPT.md         ← Full methodology (detailed reference)
-├── README.md              ← Human documentation
-├── init.sh                ← Project initializer
-├── .memory/
-│   ├── templates/         ← Reference templates (READ-ONLY)
-│   │   ├── 00-preflight.md
-│   │   ├── 01-debug-packet.md
-│   │   ├── 02-gate-system.md
-│   │   ├── 03-minimum-diff.md
-│   │   ├── 04-security-checklist.md
-│   │   ├── 05-memory-bank-guide.md
-│   │   ├── 06-roadmap.md
-│   │   └── 07-agents-subproject.md   ← 🆕 Monorepo sub-project template
-│   └── project/           ← Project state (READ-WRITE)
-│       ├── 00-description.md
-│       ├── 00-user-manual.md
-│       ├── 10-tech-context.md
-│       ├── 40-active.md
-│       ├── 50-progress.md
-│       └── 60-decisions.md
-└── .agent/
-    └── rules/
-        └── persona.md     ← Agent persona (optional)
+├── AGENTS.md
+├── MAIN_PROMPT.md
+├── README.md
+├── package.json
+├── src/
+│   └── ...
+└── .memory/
 ```
 
-<!-- 한국어: templates=읽기전용 참조, project=읽기쓰기 상태 저장소. -->
+### Python
+```
+.
+├── AGENTS.md
+├── MAIN_PROMPT.md
+├── README.md
+├── requirements.txt    # or pyproject.toml
+├── main.py
+├── src/
+│   └── ...
+├── tests/
+│   └── ...
+├── venv/               # 가상환경 (gitignore)
+└── .memory/
+```
+
+<!-- 한국어: Node.js는 package.json 기반, Python은 requirements.txt 또는 pyproject.toml 기반. -->
 
 ---
 
@@ -305,6 +352,7 @@ git checkout main  # Return to latest
 | Memory bank guide | `.memory/templates/05-memory-bank-guide.md` |
 | Roadmap template | `.memory/templates/06-roadmap.md` |
 | Sub-project AGENTS.md | `.memory/templates/07-agents-subproject.md` |
+| Python stack guide | `.memory/templates/08-python-stack.md` |
 
 ---
 
@@ -380,6 +428,59 @@ AGENTSEOF
 sed -i '' "s/\[프로젝트명\]/$PROJECT_NAME/g" AGENTS.md 2>/dev/null || \
 sed -i "s/\[프로젝트명\]/$PROJECT_NAME/g" AGENTS.md
 
+# Python 선택 시 기본 파일 생성
+if [[ "$STACK_CHOICE" == "2" || "$STACK_CHOICE" == "3" ]]; then
+    # requirements.txt 생성
+    cat > requirements.txt << 'REQEOF'
+# 기본 의존성 (필요한 것만 주석 해제)
+# fastapi
+# uvicorn[standard]
+# streamlit
+# requests
+# python-dotenv
+# pytest
+# ruff
+REQEOF
+
+    # .gitignore에 Python 관련 추가
+    cat >> .gitignore << 'GITEOF'
+
+# Python
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.env
+GITEOF
+
+    echo "   ✅ Python 기본 파일 생성 (requirements.txt, .gitignore 추가)"
+fi
+
+# Node.js 선택 시 기본 파일 생성
+if [[ "$STACK_CHOICE" == "1" || "$STACK_CHOICE" == "3" ]]; then
+    # package.json이 없으면 생성
+    if [ ! -f "package.json" ]; then
+        cat > package.json << PKGEOF
+{
+  "name": "$PROJECT_NAME",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Add dev script'",
+    "build": "echo 'Add build script'",
+    "test": "echo 'Add test script'",
+    "lint": "echo 'Add lint script'"
+  }
+}
+PKGEOF
+        echo "   ✅ Node.js package.json 생성"
+    fi
+fi
+
 # Monorepo 설정
 if [[ "$IS_MONOREPO" =~ ^[Yy]$ ]]; then
     echo ""
@@ -393,6 +494,11 @@ if [[ "$IS_MONOREPO" =~ ^[Yy]$ ]]; then
     for ((i=1; i<=SUB_COUNT; i++)); do
         read -p "서브프로젝트 $i 이름: " SUB_NAME
         read -p "서브프로젝트 $i 타입 (frontend/backend/shared/cli): " SUB_TYPE
+        echo "서브프로젝트 $i 스택:"
+        echo "  1) Node.js"
+        echo "  2) Python"
+        read -p "선택 (1/2, 기본 1): " SUB_STACK
+        SUB_STACK=${SUB_STACK:-1}
         
         mkdir -p "packages/$SUB_NAME/src"
         
@@ -417,32 +523,43 @@ This AGENTS.md applies to: \`packages/$SUB_NAME/\`
 
 - **Name**: $SUB_NAME
 - **Type**: $SUB_TYPE
+- **Stack**: $([ "$SUB_STACK" == "2" ] && echo "Python" || echo "Node.js")
 - **Purpose**: [1줄 설명 추가 필요]
 
-<!-- 한국어: 이 서브프로젝트의 이름, 타입, 목적 -->
+<!-- 한국어: 이 서브프로젝트의 이름, 타입, 스택, 목적 -->
 
 ---
 
 ## 🛠️ Dev Environment (Override)
 
 \`\`\`bash
-# This sub-project specific commands
 cd packages/$SUB_NAME
+$(if [ "$SUB_STACK" == "2" ]; then
+cat << 'PYENV'
 
-# Install
+# Python 환경
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 실행
+python main.py
+
+# 테스트
+pytest
+PYENV
+else
+cat << 'NODEENV'
+
+# Node.js 환경
 npm install
-
-# Dev
 npm run dev
-
-# Test
 npm test
-
-# Build
-npm run build
+NODEENV
+fi)
 \`\`\`
 
-<!-- 한국어: 이 서브프로젝트 전용 명령어. 루트와 다르면 여기에 명시. -->
+<!-- 한국어: 이 서브프로젝트 전용 명령어 -->
 
 ---
 
@@ -450,27 +567,12 @@ npm run build
 
 \`\`\`
 packages/$SUB_NAME/
-├── AGENTS.md          ← You are here
+├── AGENTS.md
 ├── src/
 │   └── ...
-├── package.json
-└── tsconfig.json
+$([ "$SUB_STACK" == "2" ] && echo "├── requirements.txt" || echo "├── package.json")
+└── $([ "$SUB_STACK" == "2" ] && echo "main.py" || echo "index.js")
 \`\`\`
-
----
-
-## 🎨 Sub-project Conventions
-
-### Naming
-- Components: \`PascalCase\`
-- Functions: \`camelCase\`
-- Files: \`kebab-case\`
-
-### Imports
-- Use relative imports within this package
-- Use \`@shared/\` alias for shared package
-
-<!-- 한국어: 이 서브프로젝트 전용 컨벤션. 네이밍, 임포트 규칙 등. -->
 
 ---
 
@@ -491,11 +593,19 @@ packages/$SUB_NAME/
 
 ---
 
-*Inherits from root AGENTS.md. Sub-project specific overrides above.*
+*Inherits from root AGENTS.md.*
 SUBEOF
 
-        # 서브프로젝트 package.json 생성
-        cat > "packages/$SUB_NAME/package.json" << PKGEOF
+        # 서브프로젝트 스택별 파일 생성
+        if [ "$SUB_STACK" == "2" ]; then
+            # Python
+            cat > "packages/$SUB_NAME/requirements.txt" << 'REQEOF'
+# 의존성 추가
+REQEOF
+            touch "packages/$SUB_NAME/main.py"
+        else
+            # Node.js
+            cat > "packages/$SUB_NAME/package.json" << PKGEOF
 {
   "name": "@$PROJECT_NAME/$SUB_NAME",
   "version": "0.1.0",
@@ -507,12 +617,14 @@ SUBEOF
   }
 }
 PKGEOF
+        fi
 
-        echo "   ✅ packages/$SUB_NAME/ 생성 완료"
+        echo "   ✅ packages/$SUB_NAME/ 생성 완료 ($([ "$SUB_STACK" == "2" ] && echo "Python" || echo "Node.js"))"
     done
     
-    # 루트 package.json 생성 (workspaces)
-    cat > package.json << ROOTPKGEOF
+    # 루트 package.json 생성 (Node.js 포함 시)
+    if [[ "$STACK_CHOICE" == "1" || "$STACK_CHOICE" == "3" ]]; then
+        cat > package.json << ROOTPKGEOF
 {
   "name": "$PROJECT_NAME",
   "version": "0.1.0",
@@ -527,8 +639,8 @@ PKGEOF
   }
 }
 ROOTPKGEOF
-
-    echo "   ✅ 루트 package.json (workspaces) 생성 완료"
+        echo "   ✅ 루트 package.json (workspaces) 생성"
+    fi
 fi
 
 echo ""
@@ -537,10 +649,14 @@ echo "   📄 .memory/project/00-description.md"
 echo "   📄 .memory/project/50-progress.md"
 echo "   📄 .memory/project/60-decisions.md"
 echo "   📄 AGENTS.md"
+echo "   📄 스택: $STACK_NAME"
+
+if [[ "$STACK_CHOICE" == "2" || "$STACK_CHOICE" == "3" ]]; then
+    echo "   📄 requirements.txt (Python)"
+fi
 
 if [[ "$IS_MONOREPO" =~ ^[Yy]$ ]]; then
     echo "   📦 packages/ (Monorepo 구조)"
-    echo "   📄 package.json (workspaces)"
 fi
 
 echo ""
