@@ -149,6 +149,37 @@ When errors occur:
 
 ---
 
+## 🧪 Testing Rules
+
+### When to create tests
+- New module/function → Create matching test file
+- Bug fix → Add test that catches the bug
+- API endpoint → Add integration test
+
+### Test file location
+```
+module: src/services/analyzer.py
+  test: tests/test_analyzer.py
+
+module: src/components/Dashboard.tsx
+  test: tests/components/Dashboard.test.tsx
+```
+
+### Test naming
+- Python: `test_<function_name>_<scenario>`
+- JS/TS: `describe('<Component>') → it('should <behavior>')`
+
+### Definition of "Complete"
+A task is NOT complete until:
+- [ ] Code works as expected
+- [ ] Tests pass
+- [ ] Tests cover the new functionality
+- [ ] No "complete" without tests for new code
+
+<!-- 한국어: 새 모듈에는 테스트 필수. 버그 수정 시 해당 버그 잡는 테스트 추가. 테스트 없이 완료 금지. -->
+
+---
+
 ## 🔐 Security Checklist
 
 Before any commit:
