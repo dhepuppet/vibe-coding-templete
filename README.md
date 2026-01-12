@@ -2,17 +2,21 @@
 
 Google Antigravity에서 안전하고 체계적인 바이브코딩을 위한 템플릿입니다.
 
+**🌐 AGENTS.md 표준 호환** — Cursor, GitHub Copilot, OpenAI Codex, Google Jules 등 다양한 AI 코딩 도구에서 사용 가능
+
 ---
 
 ## 📋 목차
 
 1. [이 템플릿은 뭔가요?](#이-템플릿은-뭔가요)
-2. [폴더 구조](#폴더-구조)
-3. [시작하기](#시작하기)
-4. [운영 가이드](#운영-가이드)
-5. [핵심 규칙](#핵심-규칙)
-6. [자주 쓰는 명령어](#자주-쓰는-명령어)
-7. [문제 해결](#문제-해결)
+2. [파일 역할 구분](#파일-역할-구분)
+3. [폴더 구조](#폴더-구조)
+4. [시작하기](#시작하기)
+5. [운영 가이드](#운영-가이드)
+6. [핵심 규칙](#핵심-규칙)
+7. [자주 쓰는 명령어](#자주-쓰는-명령어)
+8. [문제 해결](#문제-해결)
+9. [다른 AI 도구에서 사용하기](#다른-ai-도구에서-사용하기)
 
 ---
 
@@ -27,6 +31,34 @@ Google Antigravity에서 안전하고 체계적인 바이브코딩을 위한 템
 | 이전 버전이 망가짐 | Git 태그 + 버전 관리 |
 | 뭘 했는지 기억 안 남 | 진행 기록 자동화 |
 | 디버깅 무한루프 | 2-루프 룰 + Debug Packet |
+| 다른 AI 도구에서 못 씀 | AGENTS.md 표준 호환 |
+
+---
+
+## 파일 역할 구분
+
+| 파일 | 대상 | 용도 |
+|------|------|------|
+| `README.md` | 👤 사람 | 설치/사용 가이드 (이 파일) |
+| `AGENTS.md` | 🤖 AI (진입점) | 즉시 실행 가능한 핵심 규칙 요약 |
+| `MAIN_PROMPT.md` | 🤖 AI (상세) | 전체 방법론, 철학, 규칙 상세 |
+
+### AGENTS.md란?
+
+[AGENTS.md](https://agents.md)는 AI 코딩 에이전트를 위한 표준 설정 파일입니다.
+
+**지원 도구:**
+- ✅ Google Antigravity
+- ✅ GitHub Copilot
+- ✅ Cursor
+- ✅ OpenAI Codex
+- ✅ Google Jules
+- ✅ Factory, Aider 등 AGENTS.md 호환 도구
+
+**장점:**
+- 에이전트가 단일 파일만 읽으면 프로젝트 규칙 파악 가능
+- 도구 간 이식성 확보 (벤더 락인 없음)
+- Linux Foundation 산하 Agentic AI Foundation 표준 준수
 
 ---
 
@@ -35,7 +67,8 @@ Google Antigravity에서 안전하고 체계적인 바이브코딩을 위한 템
 ```
 vibe-coding-template/
 │
-├── 📄 MAIN_PROMPT.md          # 핵심 규칙서 (에이전트가 읽음)
+├── 📄 AGENTS.md               # 🆕 AI 에이전트 진입점 (표준)
+├── 📄 MAIN_PROMPT.md          # 핵심 규칙서 (상세 버전)
 ├── 📄 README.md               # 이 파일 (사용자 가이드)
 ├── 📄 init.sh                 # 프로젝트 초기화 스크립트
 │
@@ -87,21 +120,41 @@ cd my-new-project
 - 프로젝트 이름: `my-project`
 - 목표: `어떤 프로젝트인지 한 줄 설명`
 
-### 3단계: Antigravity에서 열기
+**자동 생성되는 파일:**
+- `.memory/project/00-description.md` — 프로젝트 개요
+- `.memory/project/50-progress.md` — 진행 기록
+- `.memory/project/60-decisions.md` — 결정 로그
+- `AGENTS.md` — AI 에이전트용 규칙 (🆕)
 
+### 3단계: AI 도구에서 열기
+
+**Antigravity:**
 1. Antigravity 실행
 2. File → Open Folder → 프로젝트 폴더 선택
 
+**Cursor / 다른 도구:**
+1. 해당 도구에서 프로젝트 폴더 열기
+2. AGENTS.md 자동 인식됨
+
 ### 4단계: 에이전트 준비
 
-채팅창에 입력:
+**Antigravity에서:**
+```
+@AGENTS.md 읽고 시작해줘.
 
+준비되면 "준비 완료"라고 말해.
+```
+
+또는 상세 버전:
 ```
 @MAIN_PROMPT.md 읽고 규칙 따라줘.
 @.memory/project/00-description.md 보고 프로젝트 파악해.
 
 준비되면 "준비 완료"라고 말해.
 ```
+
+**다른 AI 도구에서:**
+대부분 AGENTS.md를 자동으로 읽음. 안 읽으면 수동으로 참조 요청.
 
 ### 5단계: 기술 스택 설정
 
@@ -156,10 +209,10 @@ git clone https://github.com/[계정]/[프로젝트].git
 cd [프로젝트]
 ```
 
-그 다음 Antigravity에서:
+그 다음 AI 도구에서:
 
 ```
-@MAIN_PROMPT.md 읽고 규칙 따라줘.
+@AGENTS.md 읽고 시작해줘.
 @.memory/project/40-active.md 현재 상태 확인해.
 
 이어서 작업할게. 현재 상태 요약해줘.
@@ -221,9 +274,10 @@ cd [프로젝트]
 
 | 상황 | 입력 |
 |------|------|
-| 세션 시작 | `@MAIN_PROMPT.md 읽고 준비해` |
+| 세션 시작 (빠른) | `@AGENTS.md 읽고 시작해줘` |
+| 세션 시작 (상세) | `@MAIN_PROMPT.md 읽고 준비해` |
 | 상태 확인 | `현재 진행 상태 요약해줘` |
-| 규칙 상기 | `@MAIN_PROMPT.md 다시 읽어줘` |
+| 규칙 상기 | `@AGENTS.md 다시 읽어줘` |
 
 ### 버전 작업
 
@@ -256,7 +310,7 @@ cd [프로젝트]
 ### 에이전트가 규칙을 안 따를 때
 
 ```
-@MAIN_PROMPT.md 다시 읽고 규칙 상기해줘.
+@AGENTS.md 다시 읽고 규칙 상기해줘.
 특히 [안 지키는 규칙] 지켜줘.
 ```
 
@@ -296,6 +350,38 @@ git checkout main
 
 ---
 
+## 다른 AI 도구에서 사용하기
+
+이 템플릿은 [AGENTS.md 표준](https://agents.md)을 지원합니다.
+
+### Cursor
+
+1. 프로젝트 폴더 열기
+2. Cursor가 AGENTS.md 자동 인식
+3. 채팅에서 바로 작업 시작
+
+### GitHub Copilot
+
+1. VS Code에서 프로젝트 열기
+2. Copilot Chat에서 `@AGENTS.md` 참조
+3. 규칙에 따라 작업
+
+### OpenAI Codex / Google Jules
+
+1. 프로젝트 연결
+2. AGENTS.md 자동 인식 (또는 수동 참조)
+3. 표준 규칙 적용됨
+
+### 기타 도구
+
+AGENTS.md를 지원하는 모든 도구에서 동일하게 작동합니다.
+도구가 자동 인식하지 않으면:
+```
+AGENTS.md 파일을 읽고 규칙을 따라줘.
+```
+
+---
+
 ## 커스터마이징
 
 ### 페르소나 변경
@@ -304,16 +390,26 @@ git checkout main
 
 ### 규칙 추가
 
-`MAIN_PROMPT.md` 또는 `.agent/rules/persona.md`에 추가
+- 빠른 적용: `AGENTS.md`에 추가
+- 상세 규칙: `MAIN_PROMPT.md` 또는 `.agent/rules/persona.md`에 추가
 
 ### 템플릿 수정
 
 `.memory/templates/` 폴더 내 파일 수정 (원본 백업 권장)
 
+### Dev Environment 수정
+
+`AGENTS.md`의 Dev Environment 섹션을 프로젝트 스택에 맞게 수정:
+- Python: `pip install`, `python main.py` 등
+- Node.js: 기본값 유지
+- 기타: 해당 스택 명령어로 변경
+
 ---
 
 ## 참고 자료
 
+- [AGENTS.md 공식 사이트](https://agents.md)
+- [AGENTS.md GitHub](https://github.com/agentsmd/agents.md)
 - [Google Antigravity 공식 문서](https://antigravity.google/docs)
 - [Cursor Memory Bank](https://github.com/tacticlaunch/cursor-memory-bank)
 - [바이브코딩 베스트 프랙티스](https://vibecoding.app/blog/how-vibe-coding-works)
@@ -327,58 +423,3 @@ MIT License - 자유롭게 사용, 수정, 배포 가능
 ---
 
 Made with 💻 by 랩코딩 🙂
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
