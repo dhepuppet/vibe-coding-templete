@@ -180,3 +180,30 @@ Full checklist: `.memory/templates/04-security-checklist.md`
 ---
 
 *This project uses the Vibe Coding Template. For questions, see the full documentation in `MAIN_PROMPT.md`.*
+
+---
+
+## 🏗️ Monorepo Support
+
+This template supports monorepo structures with hierarchical AGENTS.md files.
+
+### How it works
+```
+project-root/
+├── AGENTS.md              ← Global rules (this file)
+├── packages/
+│   ├── app/
+│   │   └── AGENTS.md      ← App-specific rules
+│   └── api/
+│       └── AGENTS.md      ← API-specific rules
+```
+
+### Rule priority
+1. **Nearest AGENTS.md** — Check current directory first
+2. **Parent AGENTS.md** — Fallback to parent directories
+3. **Root AGENTS.md** — Global rules apply to all
+
+### Creating sub-project AGENTS.md
+Use `.memory/templates/07-agents-subproject.md` as template.
+
+<!-- 한국어: Monorepo 구조에서는 가장 가까운 AGENTS.md가 우선 적용됨. 서브프로젝트용 템플릿은 07-agents-subproject.md 참고. -->

@@ -3,6 +3,10 @@
 echo "🚀 바이브코딩 프로젝트 초기화"
 echo ""
 
+# Monorepo 여부 확인
+read -p "Monorepo 구조로 만들까? (y/N): " IS_MONOREPO
+IS_MONOREPO=${IS_MONOREPO:-N}
+
 read -p "프로젝트 이름: " PROJECT_NAME
 read -p "뭐 만들 거야? (1줄): " PROJECT_GOAL
 
@@ -264,7 +268,8 @@ git checkout main  # Return to latest
 │   │   ├── 03-minimum-diff.md
 │   │   ├── 04-security-checklist.md
 │   │   ├── 05-memory-bank-guide.md
-│   │   └── 06-roadmap.md
+│   │   ├── 06-roadmap.md
+│   │   └── 07-agents-subproject.md   ← 🆕 Monorepo sub-project template
 │   └── project/           ← Project state (READ-WRITE)
 │       ├── 00-description.md
 │       ├── 00-user-manual.md
@@ -299,6 +304,7 @@ git checkout main  # Return to latest
 | Security checklist | `.memory/templates/04-security-checklist.md` |
 | Memory bank guide | `.memory/templates/05-memory-bank-guide.md` |
 | Roadmap template | `.memory/templates/06-roadmap.md` |
+| Sub-project AGENTS.md | `.memory/templates/07-agents-subproject.md` |
 
 ---
 
@@ -339,6 +345,33 @@ git checkout main  # Return to latest
 
 ---
 
+## 🏗️ Monorepo Support
+
+This template supports monorepo structures with hierarchical AGENTS.md files.
+
+### How it works
+```
+project-root/
+├── AGENTS.md              ← Global rules (this file)
+├── packages/
+│   ├── app/
+│   │   └── AGENTS.md      ← App-specific rules
+│   └── api/
+│       └── AGENTS.md      ← API-specific rules
+```
+
+### Rule priority
+1. **Nearest AGENTS.md** — Check current directory first
+2. **Parent AGENTS.md** — Fallback to parent directories
+3. **Root AGENTS.md** — Global rules apply to all
+
+### Creating sub-project AGENTS.md
+Use `.memory/templates/07-agents-subproject.md` as template.
+
+<!-- 한국어: Monorepo 구조에서는 가장 가까운 AGENTS.md가 우선 적용됨. 서브프로젝트용 템플릿은 07-agents-subproject.md 참고. -->
+
+---
+
 *This project uses the Vibe Coding Template.*
 *Full documentation: `MAIN_PROMPT.md` | Human guide: `README.md`*
 AGENTSEOF
@@ -347,12 +380,169 @@ AGENTSEOF
 sed -i '' "s/\[프로젝트명\]/$PROJECT_NAME/g" AGENTS.md 2>/dev/null || \
 sed -i "s/\[프로젝트명\]/$PROJECT_NAME/g" AGENTS.md
 
+# Monorepo 설정
+if [[ "$IS_MONOREPO" =~ ^[Yy]$ ]]; then
+    echo ""
+    echo "📦 Monorepo 구조 생성 중..."
+    
+    read -p "서브프로젝트 개수 (기본 2): " SUB_COUNT
+    SUB_COUNT=${SUB_COUNT:-2}
+    
+    mkdir -p packages
+    
+    for ((i=1; i<=SUB_COUNT; i++)); do
+        read -p "서브프로젝트 $i 이름: " SUB_NAME
+        read -p "서브프로젝트 $i 타입 (frontend/backend/shared/cli): " SUB_TYPE
+        
+        mkdir -p "packages/$SUB_NAME/src"
+        
+        # 서브프로젝트 AGENTS.md 생성
+        cat > "packages/$SUB_NAME/AGENTS.md" << SUBEOF
+# AGENTS.md — $SUB_NAME
+
+> **Sub-project specific rules.**
+> Inherits from: \`../../AGENTS.md\` (root)
+
+---
+
+## 📍 Scope
+
+This AGENTS.md applies to: \`packages/$SUB_NAME/\`
+
+**Inherits all rules from root AGENTS.md, plus:**
+
+---
+
+## 🎯 Sub-project Overview
+
+- **Name**: $SUB_NAME
+- **Type**: $SUB_TYPE
+- **Purpose**: [1줄 설명 추가 필요]
+
+<!-- 한국어: 이 서브프로젝트의 이름, 타입, 목적 -->
+
+---
+
+## 🛠️ Dev Environment (Override)
+
+\`\`\`bash
+# This sub-project specific commands
+cd packages/$SUB_NAME
+
+# Install
+npm install
+
+# Dev
+npm run dev
+
+# Test
+npm test
+
+# Build
+npm run build
+\`\`\`
+
+<!-- 한국어: 이 서브프로젝트 전용 명령어. 루트와 다르면 여기에 명시. -->
+
+---
+
+## 📁 Sub-project Structure
+
+\`\`\`
+packages/$SUB_NAME/
+├── AGENTS.md          ← You are here
+├── src/
+│   └── ...
+├── package.json
+└── tsconfig.json
+\`\`\`
+
+---
+
+## 🎨 Sub-project Conventions
+
+### Naming
+- Components: \`PascalCase\`
+- Functions: \`camelCase\`
+- Files: \`kebab-case\`
+
+### Imports
+- Use relative imports within this package
+- Use \`@shared/\` alias for shared package
+
+<!-- 한국어: 이 서브프로젝트 전용 컨벤션. 네이밍, 임포트 규칙 등. -->
+
+---
+
+## ⚠️ Sub-project Specific Rules
+
+- [이 서브프로젝트에만 적용되는 규칙 추가]
+
+<!-- 한국어: 이 서브프로젝트에만 적용되는 특수 규칙 -->
+
+---
+
+## 📖 References
+
+| What | Where |
+|------|-------|
+| Root rules | \`../../AGENTS.md\` |
+| Full methodology | \`../../MAIN_PROMPT.md\` |
+
+---
+
+*Inherits from root AGENTS.md. Sub-project specific overrides above.*
+SUBEOF
+
+        # 서브프로젝트 package.json 생성
+        cat > "packages/$SUB_NAME/package.json" << PKGEOF
+{
+  "name": "@$PROJECT_NAME/$SUB_NAME",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Add dev script'",
+    "build": "echo 'Add build script'",
+    "test": "echo 'Add test script'"
+  }
+}
+PKGEOF
+
+        echo "   ✅ packages/$SUB_NAME/ 생성 완료"
+    done
+    
+    # 루트 package.json 생성 (workspaces)
+    cat > package.json << ROOTPKGEOF
+{
+  "name": "$PROJECT_NAME",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "echo 'Run all packages'",
+    "build": "echo 'Build all packages'",
+    "test": "echo 'Test all packages'"
+  }
+}
+ROOTPKGEOF
+
+    echo "   ✅ 루트 package.json (workspaces) 생성 완료"
+fi
+
 echo ""
 echo "✅ 완료! 생성된 파일:"
 echo "   📄 .memory/project/00-description.md"
 echo "   📄 .memory/project/50-progress.md"
 echo "   📄 .memory/project/60-decisions.md"
-echo "   📄 AGENTS.md (NEW - AI 에이전트용)"
+echo "   📄 AGENTS.md"
+
+if [[ "$IS_MONOREPO" =~ ^[Yy]$ ]]; then
+    echo "   📦 packages/ (Monorepo 구조)"
+    echo "   📄 package.json (workspaces)"
+fi
+
 echo ""
 echo "🎯 다음 스텝:"
 echo "   1. Antigravity에서 '@AGENTS.md 읽고 시작해줘'"

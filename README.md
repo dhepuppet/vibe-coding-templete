@@ -350,6 +350,61 @@ git checkout main
 
 ---
 
+## Monorepo 지원
+
+이 템플릿은 Monorepo 구조를 지원합니다.
+
+### 초기화 시 Monorepo 선택
+
+```bash
+./init.sh
+
+# "Monorepo 구조로 만들까? (y/N):" 에서 y 입력
+# 서브프로젝트 개수와 이름 입력
+```
+
+### Monorepo 구조 예시
+
+```
+my-project/
+├── AGENTS.md              ← 전체 공통 규칙
+├── MAIN_PROMPT.md
+├── package.json           ← workspaces 설정
+├── packages/
+│   ├── frontend/
+│   │   ├── AGENTS.md      ← 프론트엔드 전용 규칙
+│   │   ├── package.json
+│   │   └── src/
+│   ├── backend/
+│   │   ├── AGENTS.md      ← 백엔드 전용 규칙
+│   │   ├── package.json
+│   │   └── src/
+│   └── shared/
+│       ├── AGENTS.md      ← 공통 라이브러리 규칙
+│       ├── package.json
+│       └── src/
+└── .memory/
+```
+
+### AGENTS.md 우선순위
+
+1. **가장 가까운 AGENTS.md** — 현재 작업 폴더 우선
+2. **상위 폴더 AGENTS.md** — 없으면 부모 폴더로
+3. **루트 AGENTS.md** — 전체 공통 규칙
+
+### 서브프로젝트 AGENTS.md 수동 추가
+
+```bash
+# 템플릿 복사
+cp .memory/templates/07-agents-subproject.md packages/[이름]/AGENTS.md
+
+# 내용 수정
+# - [서브프로젝트명] 부분 채우기
+# - 전용 규칙 추가
+```
+
+---
+
 ## 다른 AI 도구에서 사용하기
 
 이 템플릿은 [AGENTS.md 표준](https://agents.md)을 지원합니다.
