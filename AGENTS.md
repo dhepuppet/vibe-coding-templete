@@ -250,6 +250,54 @@ Full checklist: `.memory/templates/04-security-checklist.md`
 
 ---
 
+## 🛠️ Available Agent Skills
+
+_Last Updated: 2026-01-22_
+
+### Code Reviewer (Critical Issues Only)
+
+**Purpose:** Automatically detect critical bugs that could crash the application  
+**Trigger:** "review code", "check for critical issues", "code review"  
+**Source:** [CodeWithNathan Gist](https://gist.github.com/codewithnathan97/77f3157a786af4a2e096f91ad2f93609)
+
+**Detection Scope:**
+- API security (authentication, key exposure, CORS config)
+- Database integrity (SQL injection, transaction errors)
+- Runtime errors (null reference, type mismatch, exception handling)
+- Performance bottlenecks (infinite loops, memory leaks, inefficient queries)
+
+**Exclusions:**
+- Code style, formatting, naming conventions, minor improvements
+
+**Output:**
+- Markdown report in project root
+- Per issue: severity level + exact line + 3 solution options
+
+**Example Usage:**
+```
+"Review the current codebase for critical issues"
+"Check API security"
+"Scan for runtime errors"
+```
+
+**File Path:** `.agent/skills/code-reviewer/skill.md`
+
+<!-- 한국어: Code Reviewer 스킬은 앱을 터뜨릴 수 있는 치명적 버그만 검출. API 보안, DB 무결성, 런타임 에러, 성능 병목 체크. 스타일/포맷팅 제외. -->
+
+---
+
+### Future Skills (Planned)
+
+The following skills are planned for integration:
+
+- **Template Generator** — Auto-generate folder structures and boilerplate
+- **Preflight Automation** — Automated pre-work safety checks
+- **Memory Bank Sync** — Auto-update project state after task completion
+
+<!-- 한국어: 향후 추가 예정 스킬: 템플릿 생성기, 프리플라이트 자동화, 메모리뱅크 동기화. -->
+
+---
+
 ## ⚠️ What NOT To Do
 
 - ❌ Skip the preflight checklist
