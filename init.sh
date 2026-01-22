@@ -29,6 +29,26 @@ case $STACK_CHOICE in
     *) STACK_NAME="Node.js" ;;
 esac
 
+# (추가) 필수 디렉토리 보장: 템플릿 복사/빈 폴더 실행 둘 다 안전하게
+mkdir -p .memory/project
+mkdir -p .memory/templates
+mkdir -p .agent/rules
+mkdir -p .agent/skills/code-reviewer
+
+# (추가) skill.md가 없을 때만 시드 생성 (기존 파일 보호)
+if [ ! -f ".agent/skills/code-reviewer/skill.md" ]; then
+  cat > ".agent/skills/code-reviewer/skill.md" << 'EOF'
+---
+name: code-reviewer
+description: Review the current project code with surgical precision. Flag only high-severity issues (bugs, security, performance, breaking changes) via succinct inline comments on specific lines. Skip style, nits, and minor improvements. High signal, low noise.
+---
+
+# Code Reviewer
+
+High-precision code review for the current project. Flag critical issues only.
+EOF
+fi
+
 # 00-description.md 생성
 cat > .memory/project/00-description.md << EOF
 # 프로젝트: $PROJECT_NAME

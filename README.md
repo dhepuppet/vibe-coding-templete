@@ -91,8 +91,11 @@ vibe-coding-template/
 │       └── 60-decisions.md        # 결정 로그
 │
 └── 📁 .agent/
-    └── 📁 rules/
-        └── persona.md         # 에이전트 페르소나 + 규칙
+    ├── 📁 rules/
+    │   └── persona.md         # 에이전트 페르소나 + 규칙
+    └── 📁 skills/
+        └── 📁 code-reviewer/
+            └── skill.md       # Code Reviewer 스킬 정의
 ```
 
 ---
